@@ -4,7 +4,7 @@ function getDisplayText(editor) {
   return editor.displayLayer.getText();
 }
 
-describe("JavaScript folding (modern Tree-sitter)", () => {
+describe("JavaScript folding (Tree-sitter)", () => {
   let editor;
   let languageMode;
   let grammar;

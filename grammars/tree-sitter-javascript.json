@@ -1,7 +1,7 @@
 {
   "name": "JavaScript",
   "scopeName": "source.js",
-  "type": "modern-tree-sitter",
+  "type": "tree-sitter",
   "parser": "tree-sitter-javascript",
   "injectionRegex": "^(js|javascript|JS|JAVASCRIPT)$",
   "treeSitter": {
