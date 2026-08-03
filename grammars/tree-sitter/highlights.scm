@@ -359,7 +359,7 @@
 ; Function variable reassignment:
 ; The "foo" in `foo = function () {`
 (assignment_expression
-  left: (identifier) @function
+  left: (identifier) @entity.name.function.definition.js
   right: [(function_expression) (arrow_function)])
 
 ; Object key-value pair function:
