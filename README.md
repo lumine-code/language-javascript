@@ -11,6 +11,10 @@ JavaScript language support.
 - **Comment toggling**: line and block comment support.
 - **Configurable indentation**: options for braces, brackets, parentheses, switch alignment, and hanging indents.
 
+## Installation
+
+To install `language-javascript` search for _language-javascript_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/language-javascript`.
+
 ## Services
 
 - **hyperlink.injection** (`^1.0.0`): consumed to highlight URLs inside code and comments as clickable links.
