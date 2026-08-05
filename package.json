@@ -15,7 +15,7 @@
     "tree-sitter"
   ],
   "engines": {
-    "atom": "*",
+    "lumine": "*",
     "node": ">=16"
   },
   "repository": "https://github.com/lumine-code/language-javascript",
