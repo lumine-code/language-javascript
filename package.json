@@ -23,7 +23,7 @@
   ],
   "engines": {
     "lumine": "^1.0.0",
-    "node": ">=16"
+    "node": ">=24"
   },
   "repository": "https://github.com/lumine-code/language-javascript",
   "license": "MIT",
