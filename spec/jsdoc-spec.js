@@ -2,11 +2,11 @@ describe("JSDoc grammar", function () {
   let grammar = null;
 
   beforeEach(function () {
-    atom.config.set("language.useTreeSitterParsers", false);
+    lumine.config.set("language.useTreeSitterParsers", false);
 
-    waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
+    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
 
-    runs(() => (grammar = atom.grammars.grammarForScopeName("source.js")));
+    runs(() => (grammar = lumine.grammars.grammarForScopeName("source.js")));
   });
 
   describe("inline tags", function () {
@@ -1036,7 +1036,7 @@ describe("JSDoc grammar", function () {
         ],
       });
 
-      ({ tokens } = grammar.tokenizeLine("/** @see http://atom.io/ */"));
+      ({ tokens } = grammar.tokenizeLine("/** @see https://example.com/ */"));
       expect(tokens[0]).toEqual({
         value: "/**",
         scopes: [
@@ -1063,7 +1063,7 @@ describe("JSDoc grammar", function () {
         scopes: ["source.js", "comment.block.documentation.js"],
       });
       expect(tokens[5]).toEqual({
-        value: "http://atom.io/",
+        value: "https://example.com/",
         scopes: [
           "source.js",
           "comment.block.documentation.js",

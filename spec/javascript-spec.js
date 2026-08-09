@@ -2,11 +2,11 @@ const fs = require("fs");
 const path = require("path");
 let TextEditor = null;
 const buildTextEditor = function (params) {
-  if (atom.workspace.buildTextEditor != null) {
-    return atom.workspace.buildTextEditor(params);
+  if (lumine.workspace.buildTextEditor != null) {
+    return lumine.workspace.buildTextEditor(params);
   } else {
     if (TextEditor == null) {
-      ({ TextEditor } = require("atom"));
+      ({ TextEditor } = require("lumine"));
     }
     return new TextEditor(params);
   }
@@ -16,11 +16,11 @@ describe("JavaScript grammar", function () {
   let grammar = null;
 
   beforeEach(function () {
-    atom.config.set("language.useTreeSitterParsers", false);
+    lumine.config.set("language.useTreeSitterParsers", false);
 
-    waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
+    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
 
-    runs(() => (grammar = atom.grammars.grammarForScopeName("source.js")));
+    runs(() => (grammar = lumine.grammars.grammarForScopeName("source.js")));
   });
 
   it("parses the grammar", function () {
@@ -2208,7 +2208,7 @@ const {
     tagScope = "meta.tag.inline.b.html";
     entityScope = "entity.name.tag.inline.b.html";
 
-    beforeEach(() => waitsForPromise(() => atom.packages.activatePackage("language-html")));
+    beforeEach(() => waitsForPromise(() => lumine.packages.activatePackage("language-html")));
 
     it("tokenizes ES6 tagged HTML string templates", function () {
       const { tokens } = grammar.tokenizeLine("html`hey <b>${name}</b>`");

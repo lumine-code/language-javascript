@@ -2,11 +2,11 @@ describe("Regular Expression Replacement grammar", function () {
   let grammar = null;
 
   beforeEach(function () {
-    atom.config.set("language.useTreeSitterParsers", false);
+    lumine.config.set("language.useTreeSitterParsers", false);
 
-    waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
+    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
 
-    runs(() => (grammar = atom.grammars.grammarForScopeName("source.js.regexp.replacement")));
+    runs(() => (grammar = lumine.grammars.grammarForScopeName("source.js.regexp.replacement")));
   });
 
   it("parses the grammar", function () {

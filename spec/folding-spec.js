@@ -21,12 +21,12 @@ describe("JavaScript folding (Tree-sitter)", () => {
   }
 
   beforeEach(async () => {
-    atom.config.set("language.useTreeSitterParsers", true);
+    lumine.config.set("language.useTreeSitterParsers", true);
 
-    editor = await atom.workspace.open();
+    editor = await lumine.workspace.open();
     editor.displayLayer.reset({ foldCharacter: "…" });
-    await atom.packages.activatePackage("language-javascript");
-    grammar = atom.grammars.grammarForScopeName("source.js");
+    await lumine.packages.activatePackage("language-javascript");
+    grammar = lumine.grammars.grammarForScopeName("source.js");
     editor.setGrammar(grammar);
     languageMode = editor.languageMode;
     await languageMode.ready;
