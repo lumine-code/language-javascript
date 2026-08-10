@@ -1,12 +1,12 @@
 describe("JSDoc grammar", function () {
   let grammar = null;
 
-  beforeEach(function () {
+  beforeEach(async () => {
     lumine.config.set("language.useTreeSitterParsers", false);
 
-    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
+    await lumine.packages.activatePackage("language-javascript");
 
-    runs(() => (grammar = lumine.grammars.grammarForScopeName("source.js")));
+    grammar = lumine.grammars.grammarForScopeName("source.js");
   });
 
   describe("inline tags", function () {

@@ -15,12 +15,12 @@ const buildTextEditor = function (params) {
 describe("JavaScript grammar", function () {
   let grammar = null;
 
-  beforeEach(function () {
+  beforeEach(async () => {
     lumine.config.set("language.useTreeSitterParsers", false);
 
-    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
+    await lumine.packages.activatePackage("language-javascript");
 
-    runs(() => (grammar = lumine.grammars.grammarForScopeName("source.js")));
+    grammar = lumine.grammars.grammarForScopeName("source.js");
   });
 
   it("parses the grammar", function () {
@@ -2208,7 +2208,9 @@ const {
     tagScope = "meta.tag.inline.b.html";
     entityScope = "entity.name.tag.inline.b.html";
 
-    beforeEach(() => waitsForPromise(() => lumine.packages.activatePackage("language-html")));
+    beforeEach(async () => {
+      await lumine.packages.activatePackage("language-html");
+    });
 
     it("tokenizes ES6 tagged HTML string templates", function () {
       const { tokens } = grammar.tokenizeLine("html`hey <b>${name}</b>`");
