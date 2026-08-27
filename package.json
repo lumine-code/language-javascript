@@ -31,47 +31,55 @@
     "indentation": {
       "title": "Indentation",
       "description": "Fine-tune automatic indentation behavior for JavaScript.",
+      "scopeResolution": "grammar",
       "type": "object",
       "properties": {
         "indentBraces": {
           "title": "Indent Curly Braces",
           "description": "Indent after `{`.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "indentBrackets": {
           "title": "Indent Brackets",
           "description": "Indent after `[`.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "indentParentheses": {
           "title": "Indent Parentheses",
           "description": "Indent after `(`.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "alignCaseWithSwitch": {
           "title": "Align “case” With ”switch”",
           "description": "When enabled, `case` and `default` statements in `switch` blocks will match the indent level of the enclosing `switch` instead of indenting themselves one level.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": false
         },
         "indentAfterBracelessIf": {
           "title": "Indent After Braceless “if” And “else”",
           "description": "When enabled, `if` and `else` statements without a brace on the initial line will trigger an indent, then a dedent after a single statement. Disable if your brace style is incompatible with this pattern.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "addHangingIndentAfterLogicalOperators": {
           "title": "Add Hanging Indent After Logical Operators",
           "description": "When enabled, will add a hanging indent when a line ends with `&&` or `||`, continuing the indent until the end of the statement.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "addHangingIndentAfterTernaryOperators": {
           "title": "Add Hanging Indent After Ternary Operators",
           "description": "When enabled, will add a hanging indent when a line ends with `?`, continuing the indent through the ensuing `:` until the end of the statement.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         }
