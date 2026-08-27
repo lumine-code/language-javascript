@@ -21,7 +21,7 @@ describe("JavaScript folding (Tree-sitter)", () => {
   }
 
   beforeEach(async () => {
-    lumine.config.set("language.useTreeSitterParsers", true);
+    lumine.config.set("editor.useTreeSitterParsers", true);
 
     editor = await lumine.workspace.open();
     editor.displayLayer.reset({ foldCharacter: "…" });

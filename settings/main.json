@@ -1,6 +1,6 @@
 {
   ".source.js": {
-    "language": {
+    "editor": {
       "nonWordCharacters": "/\\()\"':,.;<>~!#@%^&*|+=[]{}`?-…",
       "commentStart": "// ",
       "commentDelimiters": {
@@ -13,7 +13,7 @@
     }
   },
   ".source.js .meta.block.jsx.js": {
-    "language": {
+    "editor": {
       "commentStart": "{/*",
       "commentEnd": "*/}",
       "commentDelimiters": {
@@ -22,7 +22,7 @@
     }
   },
   ".source.js .meta.jsx.inside-tag.js": {
-    "language": {
+    "editor": {
       "commentStart": "{/*",
       "commentEnd": "*/}",
       "commentDelimiters": {
