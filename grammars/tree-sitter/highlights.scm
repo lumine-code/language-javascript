@@ -574,8 +574,8 @@
 
 ; TODO: This is both a key and a value, so opinions may vary on how to treat it.
 ; The "foo" in `{ foo }`.
-(object
-  (shorthand_property_identifier) @entity.other.attribute-name.shorthand.js)
+((shorthand_property_identifier) @entity.other.attribute-name.shorthand.js
+  (#is? test.childOfType object))
 
 
 ; CLASSES
@@ -979,39 +979,74 @@
 ; PUNCTUATION
 ; ===========
 
-(formal_parameters
-  "(" @punctuation.definition.parameters.begin.bracket.round.js
-  ")"@punctuation.definition.parameters.end.bracket.round.js
+(("(" @punctuation.definition.parameters.begin.bracket.round.js)
+  (#is? test.childOfType formal_parameters)
+  (#is? test.first true)
   (#set! capture.final true))
 
-(object
-  "{" @punctuation.definition.object.begin.bracket.curly.js
-  "}" @punctuation.definition.object.end.bracket.curly.js
+((")" @punctuation.definition.parameters.end.bracket.round.js)
+  (#is? test.childOfType formal_parameters)
+  (#is? test.last true)
   (#set! capture.final true))
 
-(arguments
-  "(" @punctuation.definition.arguments.begin.bracket.round.js
-  ")" @punctuation.definition.arguments.end.bracket.round.js
+(("{" @punctuation.definition.object.begin.bracket.curly.js)
+  (#is? test.childOfType object)
+  (#is? test.first true)
   (#set! capture.final true))
 
-(computed_property_name
-  "[" @punctuation.definition.computed-property.begin.bracket.square.js
-  "]" @punctuation.definition.computed-property.end.bracket.square.js
+(("}" @punctuation.definition.object.end.bracket.curly.js)
+  (#is? test.childOfType object)
+  (#is? test.last true)
   (#set! capture.final true))
 
-(subscript_expression
-  "[" @punctuation.definition.subscript.begin.bracket.square.js
-  "]" @punctuation.definition.subscript.end.bracket.square.js
+(("(" @punctuation.definition.arguments.begin.bracket.round.js)
+  (#is? test.childOfType arguments)
+  (#is? test.first true)
   (#set! capture.final true))
 
-(array
-  "[" @punctuation.definition.array.begin.bracket.square.js
-  "]" @punctuation.definition.array.end.bracket.square.js
+((")" @punctuation.definition.arguments.end.bracket.round.js)
+  (#is? test.childOfType arguments)
+  (#is? test.last true)
   (#set! capture.final true))
 
-(array_pattern
-  "[" @punctuation.definition.array.begin.bracket.square.js
-  "]" @punctuation.definition.array.end.bracket.square.js
+(("[" @punctuation.definition.computed-property.begin.bracket.square.js)
+  (#is? test.childOfType computed_property_name)
+  (#is? test.first true)
+  (#set! capture.final true))
+
+(("]" @punctuation.definition.computed-property.end.bracket.square.js)
+  (#is? test.childOfType computed_property_name)
+  (#is? test.last true)
+  (#set! capture.final true))
+
+(("[" @punctuation.definition.subscript.begin.bracket.square.js)
+  (#is? test.childOfType subscript_expression)
+  (#is? test.first true)
+  (#set! capture.final true))
+
+(("]" @punctuation.definition.subscript.end.bracket.square.js)
+  (#is? test.childOfType subscript_expression)
+  (#is? test.last true)
+  (#set! capture.final true))
+
+(("[" @punctuation.definition.array.begin.bracket.square.js)
+  (#is? test.childOfType array)
+  (#is? test.first true)
+  (#set! capture.final true))
+
+(("]" @punctuation.definition.array.end.bracket.square.js)
+  (#is? test.childOfType array)
+  (#is? test.last true)
+  (#set! capture.final true))
+
+(("[" @punctuation.definition.array.begin.bracket.square.js)
+  (#is? test.childOfType array_pattern)
+  (#is? test.first true)
+  (#set! capture.final true))
+
+(("]" @punctuation.definition.array.end.bracket.square.js)
+  (#is? test.childOfType array_pattern)
+  (#is? test.last true)
   (#set! capture.final true))
 
 "{" @punctuation.definition.block.begin.bracket.curly.js
@@ -1021,12 +1056,12 @@
 "[" @punctuation.definition.begin.bracket.square.js
 "]" @punctuation.definition.end.bracket.square.js
 
-(array
-  "," @punctuation.separator.array.comma.js
+(("," @punctuation.separator.array.comma.js)
+  (#is? test.childOfType array)
   (#set! capture.final true))
 
-(array_pattern
-  "," @punctuation.separator.array.comma.js
+(("," @punctuation.separator.array.comma.js)
+  (#is? test.childOfType array_pattern)
   (#set! capture.final true))
 
 (pair
