@@ -6,7 +6,7 @@
   "injectionNames": ["js", "javascript"],
   "treeSitter": {
     "parserSource": "github:tree-sitter/tree-sitter-javascript#v0.25.0",
-    "wasmBuildTool": "tree-sitter-cli#v0.26.13",
+    "wasmBuildTool": "tree-sitter-cli#v0.27.0",
     "grammar": "javascript.wasm",
     "highlightsQuery": "javascript-highlights.scm",
     "localsQuery": "javascript-locals.scm",
