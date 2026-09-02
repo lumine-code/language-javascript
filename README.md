@@ -4,7 +4,7 @@ JavaScript language support.
 
 ## Features
 
-- **Grammars**: provides Tree-sitter grammars built from [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript), [tree-sitter-jsdoc](https://github.com/tree-sitter/tree-sitter-jsdoc) and [tree-sitter-regex](https://github.com/tree-sitter/tree-sitter-regex) and TextMate grammars derived from [atom/language-javascript](https://github.com/atom/language-javascript).
+- **Grammars**: provides Tree-sitter grammars built from [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript) and [tree-sitter-jsdoc](https://github.com/tree-sitter/tree-sitter-jsdoc).
 - **Syntax highlighting**: full grammar coverage for JavaScript files.
 - **Snippets**: shortcuts for common declarations and control structures.
 - **Code folding**: collapse blocks, functions, and comments.

@@ -25,6 +25,9 @@
     "lumine": "^1.0.0",
     "node": ">=24"
   },
+  "specPackages": [
+    "language-regex"
+  ],
   "repository": "https://github.com/lumine-code/language-javascript",
   "license": "MIT",
   "configSchema": {
