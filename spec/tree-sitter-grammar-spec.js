@@ -46,7 +46,7 @@ describe("WASM Tree-sitter JavaScript grammar", () => {
   });
 
   it("keeps unbounded containers leaf-rooted and bounded context structural", () => {
-    const query = fs.readFileSync(highlightsPath, "utf8");
+    const query = fs.readFileSync(highlightsPath, "utf8").replaceAll("\r\n", "\n");
 
     expect(query).not.toContain(
       '(formal_parameters\n  "(" @punctuation.definition.parameters.begin',
