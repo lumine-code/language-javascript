@@ -8,23 +8,11 @@
 ; TODO: If we wanted to give these segments individual scopes, we'd do that
 ; here — replacing the `@_IGNORE_`s with scope names.
 
-(jsx_opening_element
-  (member_expression
-    (identifier) @_IGNORE_
-    (property_identifier) @_IGNORE_
-      (#set! capture.final)))
-
-(jsx_closing_element
-  (member_expression
-    (identifier) @_IGNORE_
-    (property_identifier) @_IGNORE_
-      (#set! capture.final)))
-
-(jsx_self_closing_element
-  (member_expression
-    (identifier) @_IGNORE_
-    (property_identifier) @_IGNORE_
-      (#set! capture.final)))
+(member_expression
+  (identifier) @_IGNORE_
+  (property_identifier) @_IGNORE_
+  (#is? test.typeAt "parent.parent jsx_opening_element jsx_closing_element jsx_self_closing_element")
+  (#set! capture.final))
 
 
 ; STRINGS
@@ -33,35 +21,35 @@
 ; Single-quoted.
 (string "'") @string.quoted.single.js
 
-(string
-  "'" @punctuation.definition.string.begin.js
-  (#is? test.first))
+("'" @punctuation.definition.string.begin.js
+  (#is? test.childOfType string)
+  (#is? test.first true))
 
-(string
-  "'" @punctuation.definition.string.end.js
-  (#is? test.last))
+("'" @punctuation.definition.string.end.js
+  (#is? test.childOfType string)
+  (#is? test.last true))
 
 ; Double-quoted.
 (string "\"") @string.quoted.double.js
 
-(string
-  "\"" @punctuation.definition.string.begin.js
-  (#is? test.first))
+("\"" @punctuation.definition.string.begin.js
+  (#is? test.childOfType string)
+  (#is? test.first true))
 
-(string
-  "\"" @punctuation.definition.string.end.js
-  (#is? test.last))
+("\"" @punctuation.definition.string.end.js
+  (#is? test.childOfType string)
+  (#is? test.last true))
 
 ; Template string (backticks).
 (template_string) @string.quoted.template.js
 
-(template_string
-  "`" @punctuation.definition.string.begin.js
-  (#is? test.first))
+("`" @punctuation.definition.string.begin.js
+  (#is? test.childOfType template_string)
+  (#is? test.first true))
 
-(template_string
-  "`" @punctuation.definition.string.end.js
-  (#is? test.last))
+("`" @punctuation.definition.string.end.js
+  (#is? test.childOfType template_string)
+  (#is? test.last true))
 
 ; Interpolations inside of template strings.
 (template_substitution) @meta.embedded.line.interpolation.js
@@ -71,11 +59,8 @@
   "}" @punctuation.section.embedded.end.js
   (#set! capture.final true))
 
-(string
-  (escape_sequence) @constant.character.escape.js)
-
-(template_string
-  (escape_sequence) @constant.character.escape.js)
+((escape_sequence) @constant.character.escape.js
+  (#is? test.childOfType "string template_string"))
 
 
 ; NUMBERS
@@ -160,8 +145,8 @@
 ;
 ; A variable object destructuring:
 ; The "foo" in `let { foo } = something`
-((object_pattern
-  (shorthand_property_identifier_pattern) @variable.other.assignment.destructuring.js))
+((shorthand_property_identifier_pattern) @variable.other.assignment.destructuring.js
+  (#is? test.childOfType object_pattern))
 
 ; A variable object destructuring with default value:
 ; The "foo" in `let { foo = true } = something`
@@ -171,57 +156,52 @@
 
 ; A variable object alias destructuring:
 ; The "bar" and "foo" in `let { bar: foo } = something`
-(object_pattern
-  (pair_pattern
-    ; TODO: This arguably isn't an object key.
-    key: (_) @entity.other.attribute-name.js
-    value: (identifier) @variable.other.assignment.destructuring.js)
-    (#set! capture.final true))
+(pair_pattern
+  ; TODO: This arguably isn't an object key.
+  key: (_) @entity.other.attribute-name.js
+  value: (identifier) @variable.other.assignment.destructuring.js
+  (#set! capture.final true))
 
 ; A complex object alias destructuring:
 ; The "bar" in `let { bar: { foo: troz } } = something`
-(object_pattern
-  (pair_pattern
-    ; TODO: This arguably isn't an object key.
-    key: (_) @entity.other.attribute-name.js)
-    (#set! capture.final true))
-
+(pair_pattern
+  ; TODO: This arguably isn't an object key.
+  key: (_) @entity.other.attribute-name.js
+  (#set! capture.final true))
 
 ; A variable object alias destructuring with default value:
 ; The "bar" and "foo" in `let { bar: foo = true } = something`
-(object_pattern
-  (pair_pattern
-    ; TODO: This arguably isn't an object key.
-    key: (_) @entity.other.attribute-name.js
-    value: (assignment_pattern
-      left: (identifier) @_IGNORE_)))
+(pair_pattern
+  ; TODO: This arguably isn't an object key.
+  key: (_) @entity.other.attribute-name.js
+  value: (assignment_pattern
+    left: (identifier) @_IGNORE_))
 
-(object_pattern
-  (pair_pattern
-    key: (_) @_IGNORE_
-    value: (assignment_pattern
-      left: (identifier) @variable.other.assignment.destructuring.js))
-      (#is-not? test.descendantOfType "formal_parameters"))
+(pair_pattern
+  key: (_) @_IGNORE_
+  value: (assignment_pattern
+    left: (identifier) @variable.other.assignment.destructuring.js)
+  (#is-not? test.descendantOfType "formal_parameters"))
 
 ; A "rest" parameter destructuring:
 ; The "bar" in `let { foo, ...bar } = something`
-(object_pattern
-  (rest_pattern
-    (identifier) @variable.other.assignment.destructuring.rest.js)
-    (#is-not? test.descendantOfType "formal_parameters"))
+((rest_pattern
+  (identifier) @variable.other.assignment.destructuring.rest.js)
+  (#is? test.typeAt "parent.parent object_pattern")
+  (#is-not? test.descendantOfType "formal_parameters"))
 
 ; An array-destructured assignment or reassignment, regardless of depth:
 ; The "foo" in `[foo] = bar;` and `[[foo]] = bar;`.
-((array_pattern
-  (identifier) @variable.other.assignment.destructuring.js)
+((identifier) @variable.other.assignment.destructuring.js
+  (#is? test.childOfType array_pattern)
   (#is-not? test.descendantOfType "formal_parameters"))
 
 ; An array-destructured assignment or reassignment with a default, regardless of depth:
 ; The "baz" in `let [foo, bar, baz = false] = something;` and `let [[baz = 5]] = something`;
-(array_pattern
-  (assignment_pattern
-    (identifier) @variable.other.assignment.destructuring.js)
-    (#is-not? test.descendantOfType "formal_parameters"))
+((assignment_pattern
+  (identifier) @variable.other.assignment.destructuring.js)
+  (#is? test.typeAt "parent.parent array_pattern")
+  (#is-not? test.descendantOfType "formal_parameters"))
 
 
 ; A variable declaration in a for…(in|of) loop:
@@ -231,24 +211,24 @@
 
 ; A variable array destructuring in a for…(in|of) loop:
 ; The "foo" and "bar" in `for (let [foo, bar] of baz)`
-(for_in_statement
-  left: (array_pattern
-    (identifier) @variable.other.assignment.loop.js))
+((identifier) @variable.other.assignment.loop.js
+  (#is? test.typeAt "parent array_pattern")
+  (#is? test.typeAt "parent.parent for_in_statement"))
 
 ; A variable object destructuring in a for…(in|of) loop:
 ; The "foo" and "bar" in `for (let { foo, bar } of baz)`
-(for_in_statement
-  left: (object_pattern
-    (shorthand_property_identifier_pattern) @variable.other.assignment.loop.js))
+((shorthand_property_identifier_pattern) @variable.other.assignment.loop.js
+  (#is? test.typeAt "parent object_pattern")
+  (#is? test.typeAt "parent.parent for_in_statement"))
 
 ; A variable object destructuring in a for…(in|of) loop:
 ; The "foo" in `for (let { bar: foo } of baz)`
-(for_in_statement
-  left: (object_pattern
-    (pair_pattern
-      key: (_) @entity.other.attribute-name.js
-      value: (identifier) @variable.other.assignment.loop.js)
-      (#set! capture.final true)))
+((pair_pattern
+  key: (_) @entity.other.attribute-name.js
+  value: (identifier) @variable.other.assignment.loop.js)
+  (#is? test.typeAt "parent.parent object_pattern")
+  (#is? test.typeAt "parent.parent.parent for_in_statement")
+  (#set! capture.final true))
 
 ; The "error" in `} catch (error) {`
 (catch_clause
@@ -262,36 +242,41 @@
 ; PARAMETERS
 ; ----------
 
-(formal_parameters
-  [
-    ; The "foo" in `function (foo) {`.
-    (identifier) @variable.parameter.js
-    ; The "foo" and "bar" in `function ([foo, bar]) {`.
-    (array_pattern
-      (identifier) @variable.parameter.destructuring.array.js)
+; The "foo" in `function (foo) {`.
+((identifier) @variable.parameter.js
+  (#is? test.childOfType formal_parameters))
 
-    (object_pattern
-      [
-        ; The "foo" in `function ({ key: foo }) {`.
-        (pair_pattern value: (identifier) @variable.parameter.destructuring.value.js)
+; The "foo" and "bar" in `function ([foo, bar]) {`.
+((identifier) @variable.parameter.destructuring.array.js
+  (#is? test.typeAt "parent array_pattern")
+  (#is? test.typeAt "parent.parent formal_parameters"))
 
-        ; The "key" in `function ({ key: foo }) {`.
-        (pair_pattern key: (property_identifier) @variable.parameter.destructuring.key.js)
+; The "foo" in `function ({ key: foo }) {`.
+((identifier) @variable.parameter.destructuring.value.js
+  (#is? test.typeAt "parent pair_pattern")
+  (#is? test.typeAt "parent.parent object_pattern")
+  (#is? test.typeAt "parent.parent.parent formal_parameters"))
 
-        ; The "foo" in `function ({ foo }) {`.
-        (shorthand_property_identifier_pattern) @variable.parameter.destructuring.shorthand.js
-      ])
-  ])
+; The "key" in `function ({ key: foo }) {`.
+((property_identifier) @variable.parameter.destructuring.key.js
+  (#is? test.typeAt "parent pair_pattern")
+  (#is? test.typeAt "parent.parent object_pattern")
+  (#is? test.typeAt "parent.parent.parent formal_parameters"))
+
+; The "foo" in `function ({ foo }) {`.
+((shorthand_property_identifier_pattern) @variable.parameter.destructuring.shorthand.js
+  (#is? test.typeAt "parent object_pattern")
+  (#is? test.typeAt "parent.parent formal_parameters"))
 
 ; The "foo" in `function (...foo) {`.
-(formal_parameters
-  (rest_pattern
-    (identifier) @variable.parameter.js))
+(rest_pattern
+  (identifier) @variable.parameter.js
+  (#is? test.typeAt "parent formal_parameters"))
 
 ; The "foo" in `function (foo = false) {`.
-(formal_parameters
-  (assignment_pattern
-    left: (identifier) @variable.parameter.js))
+(assignment_pattern
+  left: (identifier) @variable.parameter.js
+  (#is? test.typeAt "parent formal_parameters"))
 
 ; The "foo" in `function ({ foo = 3 }) {`.
 (object_assignment_pattern
@@ -447,13 +432,13 @@
 
 ; Built-in constructors that can be invoked without `new`.
 (call_expression
-  (identifier) @support.function.builtin.js
+  function: (identifier) @support.function.builtin.js
   (#match? @support.function.builtin.js "^(AggregateError|Array|ArrayBuffer|Boolean|BigInt|Error|EvalError|Function|Number|Object|Proxy|RangeError|String|Symbol|SyntaxError|URIError)$")
   (#set! capture.final true))
 
 ; Built-in functions.
 (call_expression
-  (identifier) @support.function.builtin.js
+  function: (identifier) @support.function.builtin.js
   (#match? @support.function.builtin.js "^(decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|eval|isFinite|isNaN|parseFloat|parseInt)$")
   (#set! capture.final true))
 
@@ -497,7 +482,7 @@
 
 ; Deprecated built-in functions.
 (call_expression
-  (identifier) @invalid.deprecated.function.js
+  function: (identifier) @invalid.deprecated.function.js
   (#match? @invalid.deprecated.function.js "^(escape|unescape)$")
   (#set! capture.final true))
 
@@ -698,7 +683,8 @@
   (#match? @punctuation.definition.comment.end.js "\\*/$")
   (#set! adjust.startAndEndAroundFirstMatchOf "\\*/$"))
 
-(hash_bang_line) @comment.line.shebang.js
+((hash_bang_line) @comment.line.shebang.js
+  (#set! adjust.endBeforeFirstMatchOf "\\r?$"))
 ((hash_bang_line) @punctuation.definition.comment.js
   (#set! adjust.endAfterFirstMatchOf "^#!"))
 
@@ -831,12 +817,11 @@
 
 (regex) @string.regexp.js
 (regex
-  "/" @punctuation.definition.string.begin.js
-  (#is? test.first))
+  . "/" @punctuation.definition.string.begin.js)
 
 (regex
-  "/" @punctuation.definition.string.end.js
-  (#is? test.last))
+  pattern: (regex_pattern)
+  "/" @punctuation.definition.string.end.js)
 
 (regex_flags) @keyword.other.js
 
@@ -844,18 +829,16 @@
 ; JSX
 ; ===
 
-; The "Foo" in `<Foo />`.
-(jsx_self_closing_element
-  name: (_) @entity.name.tag.jsx.js
-  ) @meta.tag.jsx.js
+; The "Foo" in `<Foo />`, `<Foo>`, and `</Foo>`.
+([
+  (identifier)
+  (jsx_namespace_name)
+  (member_expression)
+] @entity.name.tag.jsx.js
+  (#is? test.field name)
+  (#is? test.childOfType "jsx_opening_element jsx_closing_element jsx_self_closing_element"))
 
-; The "Foo" in `<Foo>`.
-(jsx_opening_element
-  name: (_) @entity.name.tag.jsx.js)
-
-; The "Foo" in `</Foo>`.
-(jsx_closing_element
-  name: (_) @entity.name.tag.jsx.js)
+(jsx_self_closing_element) @meta.tag.jsx.js
 
 ; The "bar" in `<Foo bar={true} />`.
 (jsx_attribute
@@ -871,8 +854,7 @@
 ; rest of the attribute.
 (jsx_attribute
   (jsx_namespace_name
-    (identifier) @meta.attribute-namespace.jsx.js
-    (#is-not? test.last)))
+    . (identifier) @meta.attribute-namespace.jsx.js))
 
 ; All JSX expressions/interpolations within braces.
 ((jsx_expression) @meta.embedded.block.jsx.js
@@ -881,20 +863,24 @@
 
 (jsx_expression) @meta.embedded.line.jsx.js
 
-(jsx_opening_element
-  "<" @punctuation.definition.tag.begin.js
-  ">" @punctuation.definition.tag.end.js) @meta.tag.jsx.js
+(jsx_opening_element) @meta.tag.jsx.js
+(jsx_closing_element) @meta.tag.jsx.js
 
-(jsx_closing_element
-  "</" @punctuation.definition.tag.begin.js
-  ">" @punctuation.definition.tag.end.js) @meta.tag.jsx.js
+("<" @punctuation.definition.tag.begin.js
+  (#is? test.childOfType jsx_opening_element))
 
-(jsx_self_closing_element
-  "<" @punctuation.definition.tag.begin.js
+("</" @punctuation.definition.tag.begin.js
+  (#is? test.childOfType jsx_closing_element))
+
+(">" @punctuation.definition.tag.end.js
+  (#is? test.childOfType "jsx_opening_element jsx_closing_element"))
+
+("<" @punctuation.definition.tag.begin.js
+  (#is? test.childOfType jsx_self_closing_element)
   (#set! capture.final true))
 
-(jsx_self_closing_element
-  "/>" @punctuation.definition.tag.end.js)
+("/>" @punctuation.definition.tag.end.js
+  (#is? test.childOfType jsx_self_closing_element))
 
 ; OPERATORS
 ; ==========
@@ -979,72 +965,68 @@
 ; PUNCTUATION
 ; ===========
 
-(("(" @punctuation.definition.parameters.begin.bracket.round.js)
+("(" @punctuation.definition.parameters.begin.bracket.round.js
   (#is? test.childOfType formal_parameters)
   (#is? test.first true)
   (#set! capture.final true))
 
-((")" @punctuation.definition.parameters.end.bracket.round.js)
+(")" @punctuation.definition.parameters.end.bracket.round.js
   (#is? test.childOfType formal_parameters)
   (#is? test.last true)
   (#set! capture.final true))
 
-(("{" @punctuation.definition.object.begin.bracket.curly.js)
+("{" @punctuation.definition.object.begin.bracket.curly.js
   (#is? test.childOfType object)
   (#is? test.first true)
   (#set! capture.final true))
 
-(("}" @punctuation.definition.object.end.bracket.curly.js)
+("}" @punctuation.definition.object.end.bracket.curly.js
   (#is? test.childOfType object)
   (#is? test.last true)
   (#set! capture.final true))
 
-(("(" @punctuation.definition.arguments.begin.bracket.round.js)
+("(" @punctuation.definition.arguments.begin.bracket.round.js
   (#is? test.childOfType arguments)
   (#is? test.first true)
   (#set! capture.final true))
 
-((")" @punctuation.definition.arguments.end.bracket.round.js)
+(")" @punctuation.definition.arguments.end.bracket.round.js
   (#is? test.childOfType arguments)
   (#is? test.last true)
   (#set! capture.final true))
 
-(("[" @punctuation.definition.computed-property.begin.bracket.square.js)
-  (#is? test.childOfType computed_property_name)
-  (#is? test.first true)
+(computed_property_name
+  "[" @punctuation.definition.computed-property.begin.bracket.square.js
   (#set! capture.final true))
 
-(("]" @punctuation.definition.computed-property.end.bracket.square.js)
-  (#is? test.childOfType computed_property_name)
-  (#is? test.last true)
+(computed_property_name
+  "]" @punctuation.definition.computed-property.end.bracket.square.js
   (#set! capture.final true))
 
-(("[" @punctuation.definition.subscript.begin.bracket.square.js)
-  (#is? test.childOfType subscript_expression)
-  (#is? test.first true)
+(subscript_expression
+  "[" @punctuation.definition.subscript.begin.bracket.square.js
   (#set! capture.final true))
 
-(("]" @punctuation.definition.subscript.end.bracket.square.js)
-  (#is? test.childOfType subscript_expression)
-  (#is? test.last true)
+(subscript_expression
+  "]" @punctuation.definition.subscript.end.bracket.square.js
   (#set! capture.final true))
 
-(("[" @punctuation.definition.array.begin.bracket.square.js)
+("[" @punctuation.definition.array.begin.bracket.square.js
   (#is? test.childOfType array)
   (#is? test.first true)
   (#set! capture.final true))
 
-(("]" @punctuation.definition.array.end.bracket.square.js)
+("]" @punctuation.definition.array.end.bracket.square.js
   (#is? test.childOfType array)
   (#is? test.last true)
   (#set! capture.final true))
 
-(("[" @punctuation.definition.array.begin.bracket.square.js)
+("[" @punctuation.definition.array.begin.bracket.square.js
   (#is? test.childOfType array_pattern)
   (#is? test.first true)
   (#set! capture.final true))
 
-(("]" @punctuation.definition.array.end.bracket.square.js)
+("]" @punctuation.definition.array.end.bracket.square.js
   (#is? test.childOfType array_pattern)
   (#is? test.last true)
   (#set! capture.final true))
@@ -1056,11 +1038,11 @@
 "[" @punctuation.definition.begin.bracket.square.js
 "]" @punctuation.definition.end.bracket.square.js
 
-(("," @punctuation.separator.array.comma.js)
+("," @punctuation.separator.array.comma.js
   (#is? test.childOfType array)
   (#set! capture.final true))
 
-(("," @punctuation.separator.array.comma.js)
+("," @punctuation.separator.array.comma.js
   (#is? test.childOfType array_pattern)
   (#set! capture.final true))
 
