@@ -3,7 +3,7 @@
   "scopeName": "source.js",
   "type": "tree-sitter",
   "parser": "tree-sitter-javascript",
-  "injectionNames": ["js", "javascript"],
+  "injectionNames": ["js", "javascript", "jsx", "node"],
   "treeSitter": {
     "parserSource": "github:tree-sitter/tree-sitter-javascript#v0.25.0",
     "wasmBuildTool": "tree-sitter-cli#v0.27.0",
