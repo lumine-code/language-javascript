@@ -1037,15 +1037,6 @@
 ")" @punctuation.definition.end.bracket.round.js
 "[" @punctuation.definition.begin.bracket.square.js
 "]" @punctuation.definition.end.bracket.square.js
-
-("," @punctuation.separator.array.comma.js
-  (#is? test.childOfType array)
-  (#set! capture.final true))
-
-("," @punctuation.separator.array.comma.js
-  (#is? test.childOfType array_pattern)
-  (#set! capture.final true))
-
 (pair
   ":" @punctuation.separator.key-value.colon.js
   (#set! capture.final true))

@@ -27,6 +27,20 @@ describe("JavaScript Tree-sitter injections", () => {
     expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
   });
 
+  it("aggregates regex patterns into one injection layer", async () => {
+    const source = Array.from(
+      { length: 300 },
+      (_, index) => `const pattern_${index} = /^value_${index}+$/;`,
+    ).join("\n");
+    const editor = await editorFor(source);
+    const regexLayers = editor.languageMode
+      .getAllInjectionLayers()
+      .filter((layer) => layer.grammar.scopeName === "source.regexp");
+
+    expect(regexLayers.length).toBe(1);
+    expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
+  });
+
   it("injects JSDoc into documentation comments", async () => {
     const editor = await editorFor("/** @param {string} name */\nfunction greet(name) {}");
 

@@ -64,6 +64,7 @@ describe("WASM Tree-sitter JavaScript grammar", () => {
     expect(query).toContain("(#is? test.childOfType object)");
     expect(query).toContain('("[" @punctuation.definition.array.begin.bracket.square.js');
     expect(query).toContain('(subscript_expression\n  "["');
+    expect(query).not.toContain('"," @punctuation.separator.array.comma.js');
     expect(query).toContain("(#is? test.childOfType string)");
     expect(query).not.toContain("(template_string\n  (escape_sequence)");
     expect(query).toContain('(#is? test.childOfType "string template_string")');
@@ -111,6 +112,8 @@ const emptyTemplate = \`\`;`);
     expect(scopesAt(3, "]")).toContain("punctuation.definition.subscript.end.bracket.square.js");
     expect(scopesAt(4, "[")).toContain("punctuation.definition.array.begin.bracket.square.js");
     expect(scopesAt(4, "]")).toContain("punctuation.definition.array.end.bracket.square.js");
+    expect(scopesAt(4, ",")).toContain("punctuation.separator.comma.js");
+    expect(scopesAt(4, ",")).not.toContain("punctuation.separator.array.comma.js");
     expect(scopesAt(5, "(")).toContain("punctuation.definition.arguments.begin.bracket.round.js");
     expect(scopesAt(5, ")")).toContain("punctuation.definition.arguments.end.bracket.round.js");
     expect(scopesAt(7, "'", 0)).toContain("punctuation.definition.string.begin.js");
@@ -154,6 +157,19 @@ const emptyTemplate = \`\`;`);
     );
     expect(argumentCaptures.map((capture) => capture.node.startPosition.row)).toEqual([7]);
     expect(argumentCaptures.every((capture) => capture.node.startPosition.row >= 6)).toBe(true);
+  });
+
+  it("does not duplicate comma captures inside large arrays", async () => {
+    const values = Array.from({ length: 1600 }, (_, index) => index).join(",");
+    await setUp(`const values = [${values}];`);
+
+    const commaCaptures = capturesForRows(0, 1).filter((capture) =>
+      capture.name.startsWith("punctuation.separator"),
+    );
+    expect(commaCaptures.length).toBe(1599);
+    expect(
+      commaCaptures.every((capture) => capture.name === "punctuation.separator.comma.js"),
+    ).toBe(true);
   });
 
   it("bounds raw work inside a 6000-row object parent", async () => {
