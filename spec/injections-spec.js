@@ -27,7 +27,7 @@ describe("JavaScript Tree-sitter injections", () => {
     expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
   });
 
-  it("aggregates regex patterns into one injection layer", async () => {
+  it("aggregates regex patterns into bounded injection layers", async () => {
     const source = Array.from(
       { length: 300 },
       (_, index) => `const pattern_${index} = /^value_${index}+$/;`,
@@ -37,8 +37,17 @@ describe("JavaScript Tree-sitter injections", () => {
       .getAllInjectionLayers()
       .filter((layer) => layer.grammar.scopeName === "source.regexp");
 
-    expect(regexLayers.length).toBe(1);
-    expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
+    expect(regexLayers.length).toBe(3);
+    expect(
+      regexLayers.map((layer) => layer.getCurrentRanges().length).sort((a, b) => b - a),
+    ).toEqual([128, 128, 44]);
+    for (const index of [127, 128, 255, 256, 299]) {
+      const offset = editor.getText().indexOf(`value_${index}+`) + `value_${index}`.length;
+      const position = editor.getBuffer().positionForCharacterIndex(offset);
+      expect(editor.scopeDescriptorForBufferPosition(position).getScopesArray()).toContain(
+        "keyword.operator.quantifier.regexp",
+      );
+    }
   });
 
   it("isolates unfinished patterns and combines them once repaired", async () => {
