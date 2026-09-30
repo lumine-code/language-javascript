@@ -18,7 +18,9 @@
     // shebang line
     "^#!.*\\b(node)\\r?\\n",
     // vim modeline
-    "vim\\b.*\\bset\\b.*\\b(filetype|ft|syntax)=(js|javascript)"
+    // Stop at the first Vim and set tokens instead of backtracking over them.
+    // \x0a keeps existing shebang prefix line counts unchanged.
+    "(?:^|\\x0a)(?:(?!vim\\b).)*vim\\b(?:(?!\\bset\\b).)*\\bset\\b.*\\b(filetype|ft|syntax)=(js|javascript)"
   ],
   "fileTypes": ["js", "cjs", "mjs", "jsx"],
   "comments": {
