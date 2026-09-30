@@ -41,6 +41,89 @@ describe("JavaScript Tree-sitter injections", () => {
     expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
   });
 
+  it("isolates unfinished patterns and combines them once repaired", async () => {
+    const editor = await editorFor("const partial = /(/;\nconst safe = /x+/;\nconst other = /y*/;");
+    const regexLayers = () =>
+      editor.languageMode
+        .getAllInjectionLayers()
+        .filter((layer) => layer.grammar.scopeName === "source.regexp");
+    expect(regexLayers().length).toBe(2);
+    expect(scopesAt(editor, "const safe")).not.toContain("meta.group.capturing.regexp");
+    expect(scopesAt(editor, "+")).toContain("keyword.operator.quantifier.regexp");
+    const buffer = editor.getBuffer();
+    const index = editor.getText().indexOf("(");
+    buffer.setTextInRange(
+      [buffer.positionForCharacterIndex(index), buffer.positionForCharacterIndex(index + 1)],
+      "()",
+    );
+    await editor.languageMode.atTransactionEnd();
+    expect(regexLayers().length).toBe(1);
+    expect(scopesAt(editor, "const safe")).not.toContain("meta.group.capturing.regexp");
+  });
+
+  it("checks literal flags before combining patterns", async () => {
+    const editor = await editorFor(
+      "const partial = /x/gg;\nconst safe = /y+/;\nconst other = /z*/;",
+    );
+    const regexLayers = () =>
+      editor.languageMode
+        .getAllInjectionLayers()
+        .filter((layer) => layer.grammar.scopeName === "source.regexp");
+    expect(regexLayers().length).toBe(2);
+    const buffer = editor.getBuffer();
+    const index = editor.getText().indexOf("gg");
+    buffer.setTextInRange(
+      [buffer.positionForCharacterIndex(index), buffer.positionForCharacterIndex(index + 2)],
+      "g",
+    );
+    await editor.languageMode.atTransactionEnd();
+    expect(regexLayers().length).toBe(1);
+  });
+
+  it("keeps very large patterns outside synchronous combination validation", async () => {
+    const editor = await editorFor(`const large = /${"a".repeat(17000)}/;\nconst safe = /x+/;`);
+    const regexLayers = editor.languageMode
+      .getAllInjectionLayers()
+      .filter((layer) => layer.grammar.scopeName === "source.regexp");
+    expect(regexLayers.length).toBe(2);
+  });
+
+  it("preserves literal boundaries around legacy escapes and numeric backreferences", async () => {
+    for (const separator of ["; const b = ", ";\nconst b = "]) {
+      for (const [first, second] of [
+        [String.raw`\x`, "41"],
+        [String.raw`\c`, "A"],
+        [String.raw`(a)\1`, "1"],
+      ]) {
+        const editor = await editorFor(
+          `const a = /${first}/${separator}/${second}/; const safe = /z+/;`,
+        );
+        const index = editor.getText().indexOf("const b");
+        const position = editor.getBuffer().positionForCharacterIndex(index);
+        expect(editor.scopeDescriptorForBufferPosition(position).getScopesArray()).not.toContain(
+          "constant.character.escape.backslash.regexp",
+        );
+        const regexLayers = editor.languageMode
+          .getAllInjectionLayers()
+          .filter((layer) => layer.grammar.scopeName === "source.regexp");
+        expect(regexLayers.length).toBe(2);
+        editor.destroy();
+      }
+    }
+  });
+
+  it("isolates grammar features that cannot safely share regex recovery", async () => {
+    for (const literal of [String.raw`/[[a-z]--[aeiou]]/v`, "/(?<ż>a)/u", String.raw`/\k<ż>/`]) {
+      const editor = await editorFor(`const a = ${literal}; const safe = /x+/;`);
+      const regexLayers = editor.languageMode
+        .getAllInjectionLayers()
+        .filter((layer) => layer.grammar.scopeName === "source.regexp");
+      expect(regexLayers.length).toBe(2);
+      expect(scopesAt(editor, "const safe")).not.toContain("meta.group.capturing.named.regexp");
+      editor.destroy();
+    }
+  });
+
   it("injects JSDoc into documentation comments", async () => {
     const editor = await editorFor("/** @param {string} name */\nfunction greet(name) {}");
 
