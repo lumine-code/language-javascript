@@ -1,67 +1,35 @@
-(
-  (comment)* @doc
-  .
-  (method_definition
-    name: (property_identifier) @name
-    (#set! symbol.contextNode "parent.parent.parent.firstNamedChild")
-  ) @definition.method
-  ; (#not-eq? @name "constructor")
-  (#strip! @doc "^[\\s\\*/]+|^[\\s\\*/]$")
-  (#select-adjacent! @doc @definition.method)
-)
+; Symbol navigation uses names and definitions, not documentation captures.
+; Keep declarations independent of preceding sibling comments.
+(method_definition
+  name: (property_identifier) @name
+  (#set! symbol.contextNode "parent.parent.parent.firstNamedChild")) @definition.method
 
-(
-  (comment)* @doc
-  .
-  (class_declaration
-    name: (_) @name) @definition.class
-)
+(class_declaration
+  name: (_) @name) @definition.class
 
-(
-  (comment)* @doc
-  .
-  (class
-    name: (_) @name) @definition.class
-)
+(class
+  name: (_) @name) @definition.class
 
-(
-  (comment)* @doc
-  .
-  [
-    (function_expression
-      name: (identifier) @name)
-    (function_declaration
-      name: (identifier) @name)
-    (generator_function
-      name: (identifier) @name)
-    (generator_function_declaration
-      name: (identifier) @name)
-  ] @definition.function
-  (#strip! @doc "^[\\s\\*/]+|^[\\s\\*/]$")
-  (#select-adjacent! @doc @definition.function)
-)
+[
+  (function_expression
+    name: (identifier) @name)
+  (function_declaration
+    name: (identifier) @name)
+  (generator_function
+    name: (identifier) @name)
+  (generator_function_declaration
+    name: (identifier) @name)
+] @definition.function
 
-(
-  (comment)* @doc
-  .
-  (lexical_declaration
-    (variable_declarator
-      name: (identifier) @name
-      value: [(arrow_function) (function_expression)]) @definition.function)
-  (#strip! @doc "^[\\s\\*/]+|^[\\s\\*/]$")
-  (#select-adjacent! @doc @definition.function)
-)
+(lexical_declaration
+  (variable_declarator
+    name: (identifier) @name
+    value: [(arrow_function) (function_expression)]) @definition.function)
 
-(
-  (comment)* @doc
-  .
-  (variable_declaration
-    (variable_declarator
-      name: (identifier) @name
-      value: [(arrow_function) (function_expression)]) @definition.function)
-  (#strip! @doc "^[\\s\\*/]+|^[\\s\\*/]$")
-  (#select-adjacent! @doc @definition.function)
-)
+(variable_declaration
+  (variable_declarator
+    name: (identifier) @name
+    value: [(arrow_function) (function_expression)]) @definition.function)
 
 (assignment_expression
   left: [
