@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 describe("JavaScript Tree-sitter injections", () => {
   beforeEach(async () => {
     await lumine.packages.activatePackage("language-regex");
@@ -138,4 +141,68 @@ describe("JavaScript Tree-sitter injections", () => {
 
     expect(scopesAt(editor, "@param")).toContain("keyword.other.tag.jsdoc.js");
   });
+
+  it("keeps template fragments together and rechecks the tag outside their content", async () => {
+    for (const name of ["language-html", "language-css"]) {
+      await lumine.packages.activatePackage(packagePath(name));
+    }
+    const editor = await editorFor("const view = HTML`<section>${name}</section>`;");
+    try {
+      const layers = () => editor.languageMode.getAllInjectionLayers();
+      expect(layers().length).toBe(1);
+      expect(layers()[0].grammar.scopeName).toBe("text.html.basic");
+      expect(layers()[0].getCurrentRanges().length).toBe(2);
+      expect(scopesAt(editor, "name")).not.toContain("text.html.basic");
+      const buffer = editor.getBuffer();
+      const index = editor.getText().indexOf("HTML");
+      buffer.setTextInRange(
+        [buffer.positionForCharacterIndex(index), buffer.positionForCharacterIndex(index + 4)],
+        "css",
+      );
+      await editor.languageMode.atGrammarSettlement();
+      expect(layers().length).toBe(1);
+      expect(layers()[0].grammar.scopeName).toBe("source.css");
+      expect(layers()[0].getCurrentRanges().length).toBe(2);
+    } finally {
+      editor.destroy();
+    }
+  });
+
+  it("preserves tag mapping precedence, nested tag calls and multiline member guards", async () => {
+    await lumine.packages.activatePackage(packagePath("language-css"));
+    const editor = await editorFor(
+      "const first = styled.graphql`color: red;`;\nconst second = css(options)`a{}`;\nconst excluded = styled\n.div`a{}`;",
+    );
+    try {
+      const layers = editor.languageMode.getAllInjectionLayers();
+      expect(layers.length).toBe(2);
+      expect(layers.map((layer) => layer.grammar.scopeName)).toEqual(["source.css", "source.css"]);
+      expect(scopesAt(editor, "color")).toContain("source.css");
+    } finally {
+      editor.destroy();
+    }
+  });
+
+  it("removes an innerHTML injection after its property changes", async () => {
+    await lumine.packages.activatePackage(packagePath("language-html"));
+    const editor = await editorFor("element.innerHTML = `<b>${name}</b>`;");
+    try {
+      expect(editor.languageMode.getAllInjectionLayers().length).toBe(1);
+      const buffer = editor.getBuffer();
+      const index = editor.getText().indexOf("innerHTML");
+      buffer.setTextInRange(
+        [buffer.positionForCharacterIndex(index), buffer.positionForCharacterIndex(index + 9)],
+        "textContent",
+      );
+      await editor.languageMode.atGrammarSettlement();
+      expect(editor.languageMode.getAllInjectionLayers().length).toBe(0);
+    } finally {
+      editor.destroy();
+    }
+  });
 });
+
+const packagePath = (name) => {
+  const sibling = path.resolve(__dirname, "..", "..", name);
+  return fs.existsSync(sibling) ? sibling : name;
+};

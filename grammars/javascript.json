@@ -12,7 +12,8 @@
     "localsQuery": "javascript-locals.scm",
     "foldsQuery": "javascript-folds.scm",
     "indentsQuery": "javascript-indents.scm",
-    "tagsQuery": "javascript-tags.scm"
+    "tagsQuery": "javascript-tags.scm",
+    "injectionsQuery": "javascript-injections.scm"
   },
   "firstLineRegex": [
     // shebang line
