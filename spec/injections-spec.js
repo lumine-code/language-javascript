@@ -22,6 +22,30 @@ describe("JavaScript Tree-sitter injections", () => {
     return editor.scopeDescriptorForBufferPosition(point).getScopesArray();
   }
 
+  it("keeps JSDoc annotations in their static description rules without duplicate comment layers", async () => {
+    await lumine.packages.activatePackage(packagePath("language-hyperlink"));
+    await lumine.packages.activatePackage(packagePath("language-todo"));
+    const editor = await editorFor(
+      "/** TODO https://example.com/docs */\n// TODO https://example.com/code\n// ordinary comment\nconst plain = 'ordinary string';",
+    );
+    try {
+      const layers = editor.languageMode.getAllInjectionLayers();
+      const annotations = layers.filter((layer) =>
+        ["text.hyperlink", "text.todo"].includes(layer.grammar.scopeName),
+      );
+      expect(annotations.length).toBe(4);
+      expect(annotations.every((layer) => layer.injectionPoint.patternIndex !== undefined)).toBe(
+        true,
+      );
+      expect(scopesAt(editor, "TODO")).toContain("storage.type.class.todo");
+      expect(scopesAt(editor, "https://example.com/docs")).toContain(
+        "markup.underline.link.hyperlink",
+      );
+    } finally {
+      editor.destroy();
+    }
+  });
+
   it("injects the shared regex grammar", async () => {
     const editor = await editorFor("const pattern = /^([a-z]+)$/;");
 

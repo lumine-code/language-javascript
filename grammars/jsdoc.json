@@ -9,6 +9,7 @@
     "wasmBuildTool": "tree-sitter-cli#v0.27.0",
     "grammar": "jsdoc.wasm",
     "highlightsQuery": "jsdoc-highlights.scm",
+    "injectionsQuery": "jsdoc-injections.scm",
     "foldsQuery": "jsdoc-folds.scm",
     "indentsQuery": "jsdoc-indents.scm"
   }
