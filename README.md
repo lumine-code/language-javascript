@@ -2,6 +2,8 @@
 
 JavaScript language support.
 
+Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/language-javascript`).
+
 ## Features
 
 - **Grammars**: provides Tree-sitter grammars built from [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript) and [tree-sitter-jsdoc](https://github.com/tree-sitter/tree-sitter-jsdoc).
