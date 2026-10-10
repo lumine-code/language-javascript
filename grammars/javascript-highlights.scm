@@ -448,7 +448,7 @@
   object: (identifier) @support.class.builtin.console.js
     (#eq? @support.class.builtin.console.js "console")
   property: (property_identifier) @support.function.builtin.console.js
-    (#match? @support.function.builtin.console.js "^(assert|clear|count(Reset)?|debug|dir(xml)?|error|group(End)?info|log|profile(End)?|table|time(End|Log|Stamp)?|trace|warn)$")
+    (#match? @support.function.builtin.console.js "^(assert|clear|count(Reset)?|debug|dir(xml)?|error|group(End)?|info|log|profile(End)?|table|time(End|Log|Stamp)?|trace|warn)$")
     (#set! capture.final true))
 
 ; Static methods of `Promise`.
