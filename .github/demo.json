@@ -1,0 +1,16 @@
+{
+  "title": "language-javascript",
+  "description": "JavaScript syntax highlighting in the editor.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "c23d55bfb1c6888bfc790e205d79d6e00fbe5db2",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "JavaScript syntax highlighting at the default editor font size.",
+      "width": 1100,
+      "height": 604
+    }
+  ]
+}

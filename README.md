@@ -13,6 +13,8 @@ Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/l
 - **Comment toggling**: line and block comment support.
 - **Configurable indentation**: options for braces, brackets, parentheses, switch alignment, and hanging indents.
 
+![JavaScript syntax highlighting at the default editor font size.](.github/demo.png)
+
 ## Installation
 
 To install `language-javascript` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/language-javascript`.
