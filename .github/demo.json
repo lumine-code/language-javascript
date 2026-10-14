@@ -1,16 +1,61 @@
 {
   "title": "language-javascript",
-  "description": "JavaScript syntax highlighting in the editor.",
-  "recordedOn": "2026-10-13",
-  "sourceRevision": "c23d55bfb1c6888bfc790e205d79d6e00fbe5db2",
+  "description": "JavaScript syntax highlighting at the default editor font size.",
+  "recordedOn": "2026-10-14",
+  "sourceRevision": "c6a745ba9ccb455cda2c4a477e2226c2b0c2e226",
+  "themeSourceRevision": "14a69683b0e3238e2bc128fbfae3866c1e4ee9c6",
   "mode": "normal",
   "fontSettings": "default",
+  "scenario": "demo.js",
+  "recipeHash": "45eeb1ebd0ee352b288a9d18f5f862e57af7632fe09cd485a573c19ab28e555b",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "electron": "44.7.0",
+    "chrome": "152.0.7977.130",
+    "devicePixelRatio": 1,
+    "locale": "en-GB",
+    "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
+    "fontSize": 14,
+    "themes": ["one-day-syntax", "one-day-ui"]
+  },
+  "viewport": { "width": 1100, "height": 604 },
+  "cornerRadius": 10,
+  "sources": {
+    "editor": {
+      "revision": "c4d7a05fe6960ae6fb041981d6cf13e9c0286b17",
+      "dirty": true,
+      "workingTreeHash": "af0ec098e764416df9522f3c6e555050b520e4700da382b2b983b2ff3742bd0a"
+    },
+    "package": {
+      "revision": "c6a745ba9ccb455cda2c4a477e2226c2b0c2e226",
+      "dirty": true,
+      "workingTreeHash": "e322b897ac398752e3fd858e4eb000a297e55b1c28f4b7f14a696184916e232c"
+    },
+    "language-javascript": {
+      "revision": "c6a745ba9ccb455cda2c4a477e2226c2b0c2e226",
+      "dirty": true,
+      "workingTreeHash": "e322b897ac398752e3fd858e4eb000a297e55b1c28f4b7f14a696184916e232c"
+    },
+    "one-theme": {
+      "revision": "14a69683b0e3238e2bc128fbfae3866c1e4ee9c6",
+      "dirty": true,
+      "workingTreeHash": "50ec2f83a6347dd8113870992ec4eb2be4014f3d9e12213c2f51b543f1eca793"
+    }
+  },
+  "fixtures": [
+    {
+      "file": "signal.js",
+      "sha256": "2a36953daadd1ae53070d0ff7ceab4624395fdb957104aa6e8ec92d785cadf1d"
+    }
+  ],
   "images": [
     {
       "file": "demo.png",
       "label": "JavaScript syntax highlighting at the default editor font size.",
       "width": 1100,
-      "height": 604
+      "height": 604,
+      "sha256": "618b623451f9017ecea2764263886fd2a4646c4e66c588a49797fc5362913f93"
     }
   ]
 }
