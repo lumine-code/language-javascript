@@ -18,7 +18,7 @@ describe("WASM Tree-sitter JavaScript grammar", () => {
     editor = await lumine.workspace.open("structural-highlights.js");
     editor.setText(text);
     languageMode = editor.getBuffer().languageMode;
-    await languageMode.ready;
+    await editor.whenGrammarSettled();
   }
 
   function scopesAt(row, text, occurrence = 0) {
