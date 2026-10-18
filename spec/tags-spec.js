@@ -74,7 +74,7 @@ describe("JavaScript symbol queries", () => {
     const language = await grammar.getLanguage();
     const query = await grammar.getQuery("tagsQuery");
     const parser = grammar.createParser(language);
-    const tree = parser.parse(source);
+    const tree = await parser.parse(source);
     try {
       expect(tree.rootNode.hasError).toBe(false);
       expect(
@@ -85,8 +85,7 @@ describe("JavaScript symbol queries", () => {
       ).toEqual([]);
       expect(query.didExceedMatchLimit()).toBe(false);
     } finally {
-      tree.delete();
-      parser.delete();
+      parser.close();
     }
     const result = await captures(source);
     expect(result.map(({ name }) => name)).toEqual(["definition.function", "name"]);
