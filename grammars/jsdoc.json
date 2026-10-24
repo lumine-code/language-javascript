@@ -6,7 +6,7 @@
   "injectionNames": ["jsdoc"],
   "treeSitter": {
     "parserSource": "github:tree-sitter/tree-sitter-jsdoc#v0.25.0",
-    "wasmBuildTool": "tree-sitter-cli#v0.27.0",
+    "wasmBuildTool": "tree-sitter-cli#v0.27.1",
     "grammar": "jsdoc.wasm",
     "highlightsQuery": "jsdoc-highlights.scm",
     "injectionsQuery": "jsdoc-injections.scm",
