@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { Range } = require("lumine");
 
 describe("JavaScript Tree-sitter injections", () => {
   beforeEach(async () => {
@@ -21,6 +22,100 @@ describe("JavaScript Tree-sitter injections", () => {
     const point = editor.getBuffer().positionForCharacterIndex(index);
     return editor.scopeDescriptorForBufferPosition(point).getScopesArray();
   }
+
+  function hyperlinkRanges(editor) {
+    return editor.languageMode
+      .getAllInjectionLayers()
+      .filter((layer) => layer.grammar.scopeName === "text.hyperlink")
+      .flatMap((layer) => layer.tree.rootNode.descendantsOfType("url"))
+      .map((node) => Range.fromObject(node.range));
+  }
+
+  async function expectExactLink(editor, url) {
+    const index = editor.getText().indexOf(url);
+    const buffer = editor.getBuffer();
+    const range = new Range(
+      buffer.positionForCharacterIndex(index),
+      buffer.positionForCharacterIndex(index + url.length),
+    );
+    expect(hyperlinkRanges(editor)).toEqual([range]);
+    expect(
+      await editor.bufferRangeForScopeAtPosition(".markup.underline.link", range.start),
+    ).toEqual(range);
+    expect(editor.scopeDescriptorForBufferPosition(range.end).getScopesArray()).not.toContain(
+      "markup.underline.link.hyperlink",
+    );
+    return range;
+  }
+
+  it("keeps only the URL linked when a TeX command makes JSDoc malformed", async () => {
+    await lumine.packages.activatePackage(packagePath("language-hyperlink"));
+    const url = "https://example.com/manual.pdf?q=1&part=2#section";
+    const editor = await editorFor(
+      String.raw`/** Documentation: \href{${url}}{Caltrans, chapter 8} */` +
+        "\nconst after = true;",
+    );
+    try {
+      const jsdoc = editor.languageMode
+        .getAllInjectionLayers()
+        .find((layer) => layer.grammar.scopeName === "source.jsdoc");
+      expect(jsdoc.tree.rootNode.hasError).toBe(true);
+      await expectExactLink(editor, url);
+      expect(scopesAt(editor, "Caltrans")).not.toContain("markup.underline.link.hyperlink");
+      expect(scopesAt(editor, "const after")).not.toContain("markup.underline.link.hyperlink");
+    } finally {
+      editor.destroy();
+    }
+  });
+
+  it("retains the description injection without duplicate links in valid JSDoc", async () => {
+    await lumine.packages.activatePackage(packagePath("language-hyperlink"));
+    const url = "https://example.com/docs";
+    const editor = await editorFor(`/** Read ${url}. */\nfunction example() {}`);
+    try {
+      const jsdoc = editor.languageMode
+        .getAllInjectionLayers()
+        .find((layer) => layer.grammar.scopeName === "source.jsdoc");
+      expect(jsdoc.tree.rootNode.hasError).toBe(false);
+      expect(jsdoc.tree.rootNode.descendantsOfType("description").length).toBe(1);
+      await expectExactLink(editor, url);
+    } finally {
+      editor.destroy();
+    }
+  });
+
+  it("replaces the fallback link injection when malformed JSDoc is repaired and restored", async () => {
+    await lumine.packages.activatePackage(packagePath("language-hyperlink"));
+    const url = "https://example.com/manual.pdf?q=1&part=2#section";
+    const editor = await editorFor(String.raw`/** Documentation: \href{${url}}{Manual} */`);
+    const jsdoc = () =>
+      editor.languageMode
+        .getAllInjectionLayers()
+        .find((layer) => layer.grammar.scopeName === "source.jsdoc");
+    try {
+      expect(jsdoc().tree.rootNode.hasError).toBe(true);
+      let range = await expectExactLink(editor, url);
+      editor.transact(() => {
+        editor
+          .getBuffer()
+          .delete(new Range(range.end, range.end.translate([0, "}{Manual}".length])));
+        editor.getBuffer().delete(new Range(range.start.translate([0, -6]), range.start));
+      });
+      await editor.whenGrammarSettled();
+      expect(jsdoc().tree.rootNode.hasError).toBe(false);
+      range = await expectExactLink(editor, url);
+      editor.transact(() => {
+        editor.getBuffer().insert(range.end, "}{Manual}");
+        editor.getBuffer().insert(range.start, String.raw`\href{`);
+      });
+      await editor.whenGrammarSettled();
+      expect(jsdoc().tree.rootNode.hasError).toBe(true);
+      await expectExactLink(editor, url);
+      expect(scopesAt(editor, "Manual")).not.toContain("markup.underline.link.hyperlink");
+    } finally {
+      editor.destroy();
+    }
+  });
 
   it("keeps JSDoc annotations in their static description rules without duplicate comment layers", async () => {
     await lumine.packages.activatePackage(packagePath("language-hyperlink"));
