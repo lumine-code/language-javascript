@@ -1,3 +1,10 @@
+; Recovery can expose template text as punctuation before the closing backtick.
+([(ERROR "`" ["{" "[" "("] @_IGNORE_)
+  (ERROR (ERROR "`") ["{" "[" "("] @_IGNORE_)] @_error
+  (#is? test.endsOnSameRowAs parent.endPosition)
+  (#match? @_error "`(?:\\\\.|[^`\\\\$]|\\$(?!\\{))*$")
+  (#set! capture.final true))
+
 ; Existing literal and comment contents are user data, including whitespace.
 ([(template_string) (comment)] @preserve
   (#is? indent.reindent true)
@@ -184,8 +191,10 @@
   (#is? test.config "language-javascript.indentation.indentParentheses"))
 
 
-(switch_case "case" @indent)
-(switch_default "default" @indent)
+(switch_case ":" @indent
+  (#is? test.lastTextOnRow true))
+(switch_default ":" @indent
+  (#is? test.lastTextOnRow true))
 
 ; JSX
 ; ===
@@ -198,8 +207,14 @@
 ; >
 (jsx_opening_element ["<"] @indent
   (#is-not? test.startsOnSameRowAs parent.lastChild.startPosition))
-((jsx_opening_element [">"] @dedent)
-  (#is-not? test.startsOnSameRowAs parent.firstChild.startPosition))
+(jsx_opening_element ">" @match
+  (#is-not? test.startsOnSameRowAs parent.startPosition)
+  (#set! indent.match parent.startPosition))
+(jsx_opening_element ">" @match.next
+  (#is-not? test.startsOnSameRowAs parent.startPosition)
+  (#is? test.lastTextOnRow true)
+  (#set! indent.match parent.startPosition)
+  (#set! indent.offset 1))
 
 ; We match on the whole node here because
 ; (a) we need to please the dedent-while-typing heuristic, so the line text
@@ -217,11 +232,9 @@
 (jsx_self_closing_element "<" @indent
   (#is-not? test.startsOnSameRowAs parent.lastChild.startPosition))
 
-; There isn't a single node whose exact text will match the line content at any
-; point, so the usual heuristic won't work. Instead we set `indent.force` and
-; use `test.lastTextOnRow` to ensure that the dedent fires exactly once while
-; typing.
-((jsx_self_closing_element "/>" @dedent)
-  (#is-not? test.startsOnSameRowAs parent.firstChild.startPosition)
-  (#is? test.lastTextOnRow)
-  (#set! indent.force true))
+; Align a delimiter-only row and resume the owner's margin after the tag.
+; Inline attributes keep their own continuation indentation while typing.
+(jsx_self_closing_element "/>" @match @match.next
+  (#is-not? test.startsOnSameRowAs parent.startPosition)
+  (#is? test.lastTextOnRow true)
+  (#set! indent.match parent.startPosition))

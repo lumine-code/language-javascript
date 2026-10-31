@@ -60,6 +60,44 @@ describe("language-javascript conservative indentation", () => {
     expect(editor.getText()).toBe("if (ready)\n{\n  run();\n}");
   });
 
+  it("keeps unfinished template text separate from recovered code delimiters", async () => {
+    for (const source of ["const value = `{", "const value = `text {", "const value = `["])
+      await enter(source, 0);
+    await enter("function run() {\n  const value = `{", 2, 1);
+    await enter("const value = `text`; function run() {", 2);
+    await enter("const value = `${run(", 2);
+  });
+
+  it("opens case bodies only after a label ending at its colon", async () => {
+    for (const label of ["case 1:", "default:"]) {
+      await enter("switch (value) {\n  " + label, 4, 1);
+      await enter("switch (value) {\n  " + label + " run();", 2, 1);
+      await enter("switch (value) {\n  " + label + " run();\n}", 2, 1);
+    }
+  });
+
+  it("uses the JSX owner's margin after multiline tags", async () => {
+    await enter('const node = <div\n  prop="value">', 2, 1);
+    await enter('const node = <div\n  prop="value"\n  >', 2, 2);
+    await enter('const node = <div\n  prop="value" />', 0, 1);
+    await enter('const node = <div\n  prop="value"\n/>', 0, 2);
+  });
+
+  it("keeps JSX attributes indented while typing their self-closing delimiter", async () => {
+    for (const [source, row, expected] of [
+      ['const node = <div\n  prop="value" ', 1, '  prop="value" />'],
+      ['const node = <div\n  prop="value"\n  ', 2, "/>"],
+    ]) {
+      await setText(source);
+      editor.setCursorBufferPosition([row, Infinity]);
+      for (const character of "/>") {
+        await editor.insertText(character, { autoIndent: true, autoDecreaseIndent: true });
+        await editor.whenGrammarSettled();
+      }
+      expect(editor.lineTextForBufferRow(row)).toBe(expected);
+    }
+  });
+
   it("dedents a closing brace typed after Enter", async () => {
     await enter("function run() {", 2);
     editor.insertText("}", { autoIndent: true, autoDecreaseIndent: true });
