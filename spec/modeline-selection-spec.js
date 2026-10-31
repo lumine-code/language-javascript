@@ -23,6 +23,26 @@ describe("JavaScript modeline selection", () => {
     expect(grammar.firstLineRegex.test("preceding line\n// vim: set ft=javascript:")).toBe(true);
   });
 
+  it("accepts complete aliases without claiming names that only share their prefix", () => {
+    for (const alias of ["js", "javascript"]) {
+      for (const key of ["filetype", "ft", "syntax"]) {
+        expect(
+          lumine.grammars.selectGrammar("modeline", "// vim: set " + key + "=" + alias + ":")
+            .scopeName,
+        ).toBe("source.js");
+        for (const suffix of ["ish", "_extra", "-extra", "2", "/extra"]) {
+          const source = "// vim: set " + key + "=" + alias + suffix + ":";
+          expect(lumine.grammars.grammarMatchesPrefix(grammar, source))
+            .withContext(source)
+            .toBe(false);
+          expect(lumine.grammars.selectGrammar("modeline", source).scopeName)
+            .withContext(source)
+            .not.toBe("source.js");
+        }
+      }
+    }
+  });
+
   it("keeps failed modelines from revisiting Vim and set tokens", () => {
     expect(grammar.firstLineRegex.source).toContain("(?:(?!vim\\b).)*vim\\b");
     expect(grammar.firstLineRegex.source).toContain("(?:(?!\\bset\\b).)*\\bset\\b");
