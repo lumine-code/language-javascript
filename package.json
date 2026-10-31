@@ -29,7 +29,8 @@
   "specPackages": [
     "language-regex",
     "language-hyperlink",
-    "language-todo"
+    "language-todo",
+    "bracket-matcher"
   ],
   "repository": "https://github.com/lumine-code/language-javascript",
   "license": "MIT",

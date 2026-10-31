@@ -1,15 +1,18 @@
 {
   ".source.js": {
     "editor": {
-      "nonWordCharacters": "/\\()\"':,.;<>~!#@%^&*|+=[]{}`?-…",
+      "nonWordCharacters": "/\\()\"':,.;<>~!@%^&*|+=[]{}`?-…",
       "commentStart": "// ",
       "commentDelimiters": {
         "block": ["/*", "*/"],
         "line": "//"
       }
+    },
+    "bracket-matcher": {
+      "autocompleteCharacters": ["()", "[]", "{}", "\"\"", "''", "``"]
     }
   },
-  ".source.js .meta.block.jsx.js": {
+  ".meta.block.jsx.js": {
     "editor": {
       "commentStart": "{/*",
       "commentEnd": "*/}",
@@ -18,12 +21,21 @@
       }
     }
   },
-  ".source.js .meta.jsx.inside-tag.js": {
+  ".meta.jsx.inside-tag.js": {
     "editor": {
       "commentStart": "{/*",
       "commentEnd": "*/}",
       "commentDelimiters": {
         "block": ["{/*", "*/}"]
+      }
+    }
+  },
+  ".meta.embedded.code.jsx.js": {
+    "editor": {
+      "commentStart": "// ",
+      "commentDelimiters": {
+        "line": "//",
+        "block": ["/*", "*/"]
       }
     }
   }

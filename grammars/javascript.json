@@ -17,7 +17,7 @@
   },
   "firstLineRegex": [
     // shebang line
-    "^#!.*\\b(node)\\r?\\n",
+    "^#![ \\t]*(?:(?:[^ \\t\\r\\n]*/)?env[ \\t]+(?:-S[ \\t]+)?(?:[^ \\t\\r\\n]*/)?|(?:[^ \\t\\r\\n]*/)?)node(?:\\.exe)?(?=[ \\t\\r\\n]|$)",
     // vim modeline
     // Stop at the first Vim and set tokens instead of backtracking over them.
     // \x0a keeps existing shebang prefix line counts unchanged.

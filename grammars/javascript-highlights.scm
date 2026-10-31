@@ -1,3 +1,6 @@
+; Store code comment metadata before a lexical rule can finalize the same leaf.
+(jsx_expression (_) @meta.embedded.code.jsx.js)
+
 ; MISC
 ; ====
 
