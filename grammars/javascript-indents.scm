@@ -1,8 +1,45 @@
-; Recovery can expose template text as punctuation before the closing backtick.
+; Recovery can expose unclosed template payloads as ordinary syntax. Keep
+; their actual child ranges, rather than freezing the containing ERROR owner.
+([(ERROR "`" _ @preserve)
+  (ERROR (ERROR "`") _ @preserve)]
+  (#is? test.matchAt "parent `(?:\\\\.|[^`\\\\$]|\\$(?!\\{))*$")
+  (#is? indent.reindent true)
+  (#is-not? indent.matchesCurrentRow parent.startPosition)
+  (#set! indent.force true))
+
+(ERROR _ @preserve
+  (#is? test.typeAt "previousSibling template_substitution")
+  (#is? test.textAt "previousSibling.lastChild }")
+  (#is-not? test.typeAt "self template_substitution ERROR ${")
+  (#is? indent.reindent true)
+  (#is-not? indent.matchesCurrentRow parent.startPosition)
+  (#set! indent.force true))
+
+(ERROR _ @preserve
+  (#is? test.typeAt "previousSibling string_fragment")
+  (#is? test.typeAt "previousSibling.previousSibling template_substitution")
+  (#is? test.textAt "previousSibling.previousSibling.lastChild }")
+  (#is-not? test.typeAt "self template_substitution ERROR ${")
+  (#is? indent.reindent true)
+  (#is-not? indent.matchesCurrentRow parent.startPosition)
+  (#set! indent.force true))
+
+; A real closing interpolation brace proves that subsequent direct siblings
+; are payload; active interpolation remains eligible for structural indentation.
 ([(ERROR "`" ["{" "[" "("] @_IGNORE_)
-  (ERROR (ERROR "`") ["{" "[" "("] @_IGNORE_)] @_error
-  (#is? test.endsOnSameRowAs parent.endPosition)
-  (#match? @_error "`(?:\\\\.|[^`\\\\$]|\\$(?!\\{))*$")
+  (ERROR (ERROR "`") ["{" "[" "("] @_IGNORE_)]
+  (#is? test.matchAt "parent `(?:\\\\.|[^`\\\\$]|\\$(?!\\{))*$")
+  (#set! capture.final true))
+
+(ERROR ["{" "[" "("] @_IGNORE_
+  (#is? test.typeAt "previousSibling template_substitution")
+  (#is? test.textAt "previousSibling.lastChild }")
+  (#set! capture.final true))
+
+(ERROR ["{" "[" "("] @_IGNORE_
+  (#is? test.typeAt "previousSibling string_fragment")
+  (#is? test.typeAt "previousSibling.previousSibling template_substitution")
+  (#is? test.textAt "previousSibling.previousSibling.lastChild }")
   (#set! capture.final true))
 
 ; Existing literal and comment contents are user data, including whitespace.
