@@ -43,6 +43,29 @@ describe("JavaScript modeline selection", () => {
     }
   });
 
+  it("recognizes exact aliases at LF and CRLF boundaries in a multiline prefix", () => {
+    for (const newline of ["\n", "\r\n"]) {
+      for (const alias of ["js", "javascript"]) {
+        for (const key of ["filetype", "ft", "syntax"]) {
+          const modeline = "// vim: set " + key + "=" + alias;
+          const source = modeline + newline + "content";
+          expect(lumine.grammars.selectGrammar("modeline", source).scopeName)
+            .withContext(JSON.stringify(source))
+            .toBe("source.js");
+          for (const suffix of ["ish", "_extra", "-extra", "2", "/extra"]) {
+            const invalid = modeline + suffix + newline + "content";
+            expect(lumine.grammars.grammarMatchesPrefix(grammar, invalid))
+              .withContext(JSON.stringify(invalid))
+              .toBe(false);
+            expect(lumine.grammars.selectGrammar("modeline", invalid).scopeName)
+              .withContext(JSON.stringify(invalid))
+              .not.toBe("source.js");
+          }
+        }
+      }
+    }
+  });
+
   it("keeps failed modelines from revisiting Vim and set tokens", () => {
     expect(grammar.firstLineRegex.source).toContain("(?:(?!vim\\b).)*vim\\b");
     expect(grammar.firstLineRegex.source).toContain("(?:(?!\\bset\\b).)*\\bset\\b");
