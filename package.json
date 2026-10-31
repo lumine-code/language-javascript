@@ -73,21 +73,21 @@
           "description": "When enabled, `if` and `else` statements without a brace on the initial line will trigger an indent, then a dedent after a single statement. Disable if your brace style is incompatible with this pattern.",
           "scopeResolution": "grammar",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "addHangingIndentAfterLogicalOperators": {
           "title": "Add Hanging Indent After Logical Operators",
           "description": "When enabled, will add a hanging indent when a line ends with `&&` or `||`, continuing the indent until the end of the statement.",
           "scopeResolution": "grammar",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "addHangingIndentAfterTernaryOperators": {
           "title": "Add Hanging Indent After Ternary Operators",
           "description": "When enabled, will add a hanging indent when a line ends with `?`, continuing the indent through the ensuing `:` until the end of the statement.",
           "scopeResolution": "grammar",
           "type": "boolean",
-          "default": true
+          "default": false
         }
       }
     }
