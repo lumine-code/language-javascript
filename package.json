@@ -30,7 +30,8 @@
     "language-regex",
     "language-hyperlink",
     "language-todo",
-    "bracket-matcher"
+    "bracket-matcher",
+    "language-css"
   ],
   "repository": "https://github.com/lumine-code/language-javascript",
   "license": "MIT",

@@ -13,7 +13,10 @@
     "foldsQuery": "javascript-folds.scm",
     "indentsQuery": "javascript-indents.scm",
     "tagsQuery": "javascript-tags.scm",
-    "injectionsQuery": "javascript-injections.scm"
+    "injectionsQuery": "javascript-injections.scm",
+    "contentEditPolicies": {
+      "content-words": "../lib/content-edit-policy.js"
+    }
   },
   "firstLineRegex": [
     // shebang line
