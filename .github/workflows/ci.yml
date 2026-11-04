@@ -116,3 +116,14 @@ jobs:
           else
             npm start -- --test ../language-javascript/spec
           fi
+      - name: Validate injection policies with worker syntax
+        working-directory: lumine
+        timeout-minutes: 20
+        env:
+          LUMINE_SYNTAX_EXECUTION: worker
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            xvfb-run --auto-servernum npm start -- --test ../language-javascript/spec/content-edit-policy-spec.js
+          else
+            npm start -- --test ../language-javascript/spec/content-edit-policy-spec.js
+          fi
