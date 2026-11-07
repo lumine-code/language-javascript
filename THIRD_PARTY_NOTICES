@@ -69,6 +69,9 @@ suitability for any purpose.
 Source: https://github.com/tree-sitter/tree-sitter-javascript
 Revision: v0.25.0
 
+Parser source: github:tree-sitter/tree-sitter-javascript#v0.25.0
+Resolved commit: 44c892e0be055ac465d5eeddae6d3e194424e7de
+
 Original file: LICENSE
 
 The MIT License (MIT)
@@ -97,6 +100,9 @@ SOFTWARE.
 ----- BEGIN THIRD-PARTY LICENSE: parser:tree-sitter_tree-sitter-jsdoc -----
 Source: https://github.com/tree-sitter/tree-sitter-jsdoc
 Revision: v0.25.0
+
+Parser source: github:tree-sitter/tree-sitter-jsdoc#v0.25.0
+Resolved commit: 658d18dcdddb75c760363faa4963427a7c6b52db
 
 Original file: LICENSE
 
