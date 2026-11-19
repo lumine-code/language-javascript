@@ -16,7 +16,7 @@ describe("JavaScript folding (Tree-sitter)", () => {
 
   async function expectToFoldInto(unfoldedText, foldedText, { rowNumberToFold = 0 } = {}) {
     await setTextAndWaitForUpdate(unfoldedText);
-    editor.foldBufferRow(rowNumberToFold);
+    await editor.foldBufferRow(rowNumberToFold);
     expect(getDisplayText(editor)).toBe(foldedText);
   }
 
@@ -92,7 +92,7 @@ describe("JavaScript folding (Tree-sitter)", () => {
       }
     `);
 
-    editor.foldBufferRow(0);
+    await editor.foldBufferRow(0);
     expect(getDisplayText(editor)).toBe(dedent`
       function foo(…
       ) {
@@ -100,7 +100,7 @@ describe("JavaScript folding (Tree-sitter)", () => {
       }
     `);
 
-    editor.foldBufferRow(4);
+    await editor.foldBufferRow(4);
     expect(getDisplayText(editor)).toBe(dedent`
       function foo(…
       ) {…}
@@ -129,7 +129,7 @@ describe("JavaScript folding (Tree-sitter)", () => {
       }
     `);
 
-    editor.foldBufferRow(1);
+    await editor.foldBufferRow(1);
     expect(getDisplayText(editor)).toBe(dedent`
       class A {
         getB (c,…) {
@@ -150,8 +150,8 @@ describe("JavaScript folding (Tree-sitter)", () => {
       }
     `);
 
-    editor.foldBufferRow(0);
-    editor.foldBufferRow(2);
+    await editor.foldBufferRow(0);
+    await editor.foldBufferRow(2);
     expect(getDisplayText(editor)).toBe(dedent`
       if (a) {…
       } else if (c) {…
