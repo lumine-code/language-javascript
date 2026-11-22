@@ -13,6 +13,7 @@
     "foldsQuery": "javascript-folds.scm",
     "indentsQuery": "javascript-indents.scm",
     "tagsQuery": "javascript-tags.scm",
+    "tagsQuerySupportsLocalPath": true,
     "injectionsQuery": "javascript-injections.scm",
     "contentEditPolicies": {
       "content-words": "../lib/content-edit-policy.js"
